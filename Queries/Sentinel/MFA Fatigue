@@ -1,0 +1,11 @@
+let Quantity = 5;
+let reason = dynamic([ "MFA denied; user never entered the verification code", "MFA denied; invalid verification code"]);
+SigninLogs 
+| where ResultType == 500121 
+| where TimeGenerated > ago(90d)
+| extend AuthenticationDetails = parse_json(AuthenticationDetails)
+| mv-expand AuthenticationDetails
+| extend FailureReason = strcat(AuthenticationDetails.authenticationStepResultDetail)
+| where FailureReason in~ (reason)
+| summarize ['Result Detail']=make_list(FailureReason), ['Result Count']=count() by UserPrincipalName, bin(TimeGenerated, 10m)
+| where ['Result Count'] >= Quantity
