@@ -1,0 +1,3 @@
+DeviceRegistryEvents 
+| where ActionType == "RegistryValueSet"
+| where RegistryKey startswith 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Defender\\Exclusions' 
