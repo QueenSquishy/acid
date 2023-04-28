@@ -1,0 +1,8 @@
+let DFE = AlertEvidence
+| where Title == "New File Extensions found in downloads folder"
+| extend ParentFriendlyName = tostring(parse_json(tostring(AdditionalFields.ParentProcess)).FriendlyName)
+| extend SHA256 = tostring(parse_json(tostring(parse_json(tostring(AdditionalFields.ImageFile)).FileHashes))[1].Value)
+| where isnotempty(SHA256);
+SecurityAlert
+| extend SHA256 = tostring(parse_json(tostring(parse_json(Entities)[0].FileHashes))[2].Value)
+| join kind=inner DFE on SHA256
