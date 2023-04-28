@@ -1,0 +1,3 @@
+let TI_Bag = ThreatIntelligenceIndicator | where isnotempty(NetworkSourceIP) | project NetworkSourceIP;
+NetworkCustomAnalytics_ip_CL
+| where DstIpAddr_s in~ (TI_Bag)
