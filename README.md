@@ -2,4 +2,4 @@
 
 Queries in KQL.
 
-Do whatever
+Not for human consumption
