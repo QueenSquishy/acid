@@ -1,0 +1,8 @@
+DeviceEvents
+| where ActionType == "LdapSearch"
+| extend AF = parse_json(AdditionalFields)
+| mv-expand AF
+| where AF has "SearchFilter"
+| extend length = string_size(AF)
+| summarize avg = avg(length) by AF
+| project bin(avg, 1)
