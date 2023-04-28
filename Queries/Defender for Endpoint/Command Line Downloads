@@ -1,0 +1,5 @@
+DeviceEvents
+| where InitiatingProcessFileName has_any ("powershell.exe", "cmd.exe")
+| where InitiatingProcessCommandLine has_any ("Invoke-WebRequest", "IWR", "curl")
+                                            and InitiatingProcessCommandLine has_any ("outfile", "out", "-o")
+| project InitiatingProcessCommandLine, Timestamp, DeviceName, InitiatingProcessAccountName, DeviceId, ReportId
