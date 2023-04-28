@@ -1,0 +1,22 @@
+let start = ago(14d);
+let end = ago(1d);
+let lookback = DeviceFileEvents
+| where Timestamp between (start .. end)
+| extend extensions = extract(@"\.[^\.]+$", 0 , FileName)
+| where isnotempty(extensions)
+| where FolderPath !has "NetFramework"
+| distinct extensions;
+let lookup = DeviceFileEvents
+| where Timestamp >= end
+| extend extensions = extract(@"\.[^\.]+$", 0 , FileName)
+| where isnotempty(extensions)
+| where FolderPath !has "NetFramework"
+| distinct extensions;
+let newextensions = lookback
+| join kind=leftanti lookup on (extensions);
+DeviceFileEvents
+| extend extensions = extract(@"\.[^\.]+$", 0 , FileName)
+| where isnotempty(extensions)
+| where extensions in (newextensions)
+| project-reorder extensions
+| where FolderPath matches regex @"(.*?)Downloads(.*?)"
