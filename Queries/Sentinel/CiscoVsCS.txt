@@ -1,0 +1,15 @@
+let timerange = 24h;
+let Threshold = 25;
+let CSRecentDetections = workspace("workspace").table
+| project Devices = device_hostname_s;
+Cisco_Umbrella_dns_CL
+| where Action_s contains "blocked" and Categories_s contains "malware"
+    or Categories_s contains "p2p"
+    or Categories_s contains "proxy"
+    or Categories_s contains "peer"
+| project Identities_s, TimeGenerated, Domain_s, Blocked_Categories_s
+| summarize count() by Identities_s, Domain_s, Blocked_Categories_s
+| sort by count_ desc, Identities_s
+| where count_ >= Threshold
+| extend DNSDevice = tostring(parse_json(Identities_s)[1])
+| where DNSDevice in (CSRecentDetections)

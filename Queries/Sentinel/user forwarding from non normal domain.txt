@@ -1,0 +1,18 @@
+let Domain = SigninLogs
+| where TimeGenerated > ago(14d)
+| project UserPrincipalName
+| extend Account = extract(@"@([\w.]+)", 1 , UserPrincipalName)
+| where isnotempty(Account)
+| project-away UserPrincipalName
+| summarize count = count(Account) by Account
+| top 1 by ['count']
+| project Account;
+OfficeActivity
+| where Operation == "UpdateInboxRules"
+| where parse_json(tostring(OperationProperties[6].Value))[0].ActionType == "Forward"
+| extend rule_condition = tostring(OperationProperties[3].Value)
+| summarize forwardto = make_set(parse_json(tostring(parse_json(tostring(OperationProperties[6].Value))[0].Recipients))) by UserId, rule_condition, Client_IPAddress
+| extend forwarded = tostring(forwardto[0])
+| extend LocalDomain = extract(@"@([\w.]+)", 1 , forwarded)
+| where LocalDomain !in (Domain)
+| project-away LocalDomain, forwarded

@@ -1,0 +1,5 @@
+OfficeActivity
+| where UserId has "{user}"
+| extend Hour = datetime_part("Hour", TimeGenerated)
+| summarize count = count(Hour) by Hour, Operation
+| summarize by Operation, Hour

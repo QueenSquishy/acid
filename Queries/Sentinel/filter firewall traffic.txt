@@ -1,0 +1,6 @@
+let Now = now();
+CommonSecurityLog
+| where TimeGenerated > ago(3d)
+| where DeviceVendor has "{value}"
+| summarize Count = count(Activity) by bin_at(TimeGenerated, 1d, Now), Activity
+| sort by Activity

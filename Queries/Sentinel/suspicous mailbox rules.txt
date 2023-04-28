@@ -1,0 +1,9 @@
+let susfolders = dynamic ([ "Deleted Items", "Conversation History", "Deleted", "Junk", "Archive" ]);
+OfficeActivity
+| where TimeGenerated > ago(90d)
+| where Operation == "New-InboxRule"
+| extend Params = parse_json(Parameters)
+| mv-expand Params
+| extend Parameter = tostring(Params.Value)
+| where Parameter in~ (susfolders)
+| project TimeGenerated, UserId, Parameter, Params

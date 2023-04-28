@@ -1,0 +1,60 @@
+let starttime = 8d;
+let endtime = 1d;
+let threshold = 0.50;
+let countlimit = 150;
+let Excessive = 
+    SecurityEvent
+    | where TimeGenerated >= ago(endtime)
+    | where EventID == 4625 and AccountType =~ "User"
+    | where IpAddress !in ("127.0.0.1", "::1")
+    | summarize
+        StartTime = min(TimeGenerated),
+        EndTime = max(TimeGenerated),
+        CountToday = count()
+        by
+        EventID,
+        Account,
+        LogonTypeName,
+        SubStatus,
+        AccountType,
+        Computer,
+        WorkstationName,
+        IpAddress,
+        Process
+    | join kind=leftouter (
+        SecurityEvent
+        | where TimeGenerated between (ago(starttime) .. ago(endtime))
+        | where EventID == 4625 and AccountType =~ "User"
+        | where IpAddress !in ("127.0.0.1", "::1")
+        | summarize CountPrev7day = count()
+            by
+            EventID,
+            Account,
+            LogonTypeName,
+            SubStatus,
+            AccountType,
+            Computer,
+            WorkstationName,
+            IpAddress
+        )
+        on
+        EventID,
+        Account,
+        LogonTypeName,
+        SubStatus,
+        AccountType,
+        Computer,
+        WorkstationName,
+        IpAddress
+| where CountToday >= coalesce(CountPrev7day, 0) * threshold and CountToday >= countlimit;
+let Success = 
+    SecurityEvent
+    | where EventID == 4624 and AccountType =~ "User"
+    | where IpAddress !in ("127.0.0.1", "::1")
+    | where TimeGenerated >= ago(14d)
+    | project Account, WorkstationName;
+Excessive
+| join kind=leftanti (
+    Success
+    )
+    on Account, WorkstationName

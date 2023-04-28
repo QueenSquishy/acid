@@ -1,0 +1,20 @@
+let starttime = 14d;
+let endtime = 1d;
+let historic = SigninLogs
+| where TimeGenerated between(ago(starttime)..ago(endtime))
+| where ResultType == 500121
+| where Status has "MFA Denied; user declined the authentication" or Status has "MFA denied; Phone App Reported Fraud"
+| extend isManaged = tostring(DeviceDetail.isManaged)
+| where isempty(isManaged) or isManaged == "false"
+| extend Type = Type
+| extend timestamp = TimeGenerated, AccountCustomEntity = UserPrincipalName, IPCustomEntity = IPAddress, URLCustomEntity = ClientAppUsed;
+let recent = SigninLogs
+| where ResultType == 500121
+| where Status has "MFA Denied; user declined the authentication" or Status has "MFA denied; Phone App Reported Fraud"
+| extend isManaged = tostring(DeviceDetail.isManaged)
+| where isempty(isManaged) or isManaged == "false"
+| extend Type = Type
+| extend timestamp = TimeGenerated, AccountCustomEntity = UserPrincipalName, IPCustomEntity = IPAddress, URLCustomEntity = ClientAppUsed
+| where TimeGenerated > ago(endtime);
+recent
+| join kind = leftanti (historic) on IPAddress
