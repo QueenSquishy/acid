@@ -1,0 +1,6 @@
+let Alert = SecurityAlert
+| extend SHA256 = tostring(parse_json(tostring(parse_json(Entities)[0].FileHashes))[2].Value)
+| where isnotempty(SHA256)
+| distinct SHA256;
+SysmonEventsParsed()
+| where SHA256 in~ (Alert)
