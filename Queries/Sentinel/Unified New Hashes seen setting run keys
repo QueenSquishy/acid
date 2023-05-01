@@ -1,0 +1,10 @@
+let unifiednewhash = SysmonEventsParsed()
+| join kind=leftanti DeviceProcessEvents on SHA256
+| distinct SHA256;
+DeviceRegistryEvents
+| where RegistryKey has "Windows\\CurrentVersion\\Run" or 
+RegistryKey has "Windows\\CurrentVersion\\RunOnce" or 
+RegistryKey has "Windows\\CurrentVersion\\R" or 
+RegistryKey has "Windows\\CurrentVersion\\RunEx" or 
+RegistryKey has "Windows\\CurrentVersion\\RunOnceEx"
+| where InitiatingProcessSHA256 in (unifiednewhash)
