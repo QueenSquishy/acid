@@ -1,0 +1,10 @@
+SigninLogs
+| extend Device = tostring(DeviceDetail.displayName)
+| extend Browser = tostring(DeviceDetail.browser)
+| extend Country = tostring(LocationDetails.countryOrRegion)
+| sort by TimeGenerated asc
+| extend timeDiffInMins = datetime_diff('minute', TimeGenerated, prev(TimeGenerated, 1))
+| extend PrevCountry = prev(Country, 1, "")
+| extend PrevBrowser = prev(Browser, 1, "")
+| project-reorder timeDiffInMins, PrevCountry, Country, Device, Browser, TimeGenerated
+| where timeDiffInMins >= 1 and Country != PrevCountry and Browser != PrevBrowser
