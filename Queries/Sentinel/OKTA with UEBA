@@ -1,0 +1,8 @@
+BehaviorAnalytics
+| where InvestigationPriority >= 6
+| project-rename actor_alternateId_s = UserPrincipalName
+| join kind=inner (
+Okta_CL
+| where eventType_s == "policy.evaluate_sign_on"
+| where outcome_result_s == "ALLOW" )
+on actor_alternateId_s
