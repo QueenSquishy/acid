@@ -1,0 +1,17 @@
+let starttime = todatetime('{{StartTimeISO}}');
+let endtime = todatetime('{{EndTimeISO}}');
+let lookback = totimespan((endtime - starttime) * 14);
+SigninLogs
+| where TimeGenerated >= starttime
+| where ResultType == 500121
+| where Status has "MFA Denied; user declined the authentication" or Status has "MFA denied; Phone App Reported Fraud"
+| extend Type = Type
+| extend timestamp = TimeGenerated, AccountCustomEntity = UserPrincipalName, IPCustomEntity = IPAddress, URLCustomEntity = ClientAppUsed
+| join kind=leftanti (
+SigninLogs
+| where ResultType == 500121
+| where Status has "MFA Denied; user declined the authentication" or Status has "MFA denied; Phone App Reported Fraud"
+| extend Type = Type
+| extend timestamp = TimeGenerated, AccountCustomEntity = UserPrincipalName, IPCustomEntity = IPAddress, URLCustomEntity = ClientAppUsed
+| where TimeGenerated between(ago(lookback)..starttime))
+on Location
