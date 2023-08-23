@@ -1,0 +1,7 @@
+Event
+| where EventLog == "Microsoft-Windows-CodeIntegrity/Operational"
+| extend EventData = parse_xml(EventData).DataItem.EventData.Data
+| mv-expand bagexpansion=array EventData
+| evaluate bag_unpack(EventData)
+| extend Key = tostring(column_ifexists('@Name', "")), Value = tostring(column_ifexists('#text', ""))
+| evaluate pivot(Key, any(Value), TimeGenerated, Source, EventLog, Computer, EventLevel, EventLevelName, EventID, UserName, RenderedDescription, MG, ManagementGroupName, _ResourceId)
