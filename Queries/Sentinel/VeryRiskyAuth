@@ -1,0 +1,6 @@
+SigninLogs
+| where TimeGenerated > 90d
+| extend displayName_ = tostring(DeviceDetail.displayName)
+| where RiskLevelDuringSignIn == "high"
+and RiskState == "atRisk"
+and RiskLevelAggregated == "medium" or RiskLevelAggregated == "high"
