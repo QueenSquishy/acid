@@ -1,0 +1,4 @@
+union withsource = tablename DeviceProcessEvents, DeviceFileEvents, DeviceRegistryEvents
+| summarize lastentry = datetime_diff("second", now(), max(Timestamp)) by tablename
+| project ['Table_Name'] = tablename, ['Last Record Received'] = lastentry
+| order by ['Last Record Received'] desc
