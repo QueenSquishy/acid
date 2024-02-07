@@ -1,5 +1,5 @@
 # acid
 
-Queries in KQL.
+Queries
 
 Not for human consumption
