@@ -1,0 +1,7 @@
+#event_simpleName=ProcessRollup2 ParentBaseFileName=/^outlook\.exe$/i FileName=/^(chrome|firefox|iexplore|msedge)\.exe$/i
+| regex("(?<urlString>https?\:\/\/\S+)\"?", field=CommandLine, strict=false) 
+| urlString = *
+| table([@timestamp, aid, ComputerName, ParentBaseFileName, FileName, urlString, CommandLine])
+// key values to match
+| (urlString =/.ru/ or urlString = /.php/ or urlString = /.aspx/ or urlString = /,py/ or urlString = /.sh/ or urlString = /.bash/ or urlString = /.pl/ or urlString = /.zip/)
+| CommandLine != /sharepoint/
