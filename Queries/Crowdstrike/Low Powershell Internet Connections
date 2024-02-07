@@ -1,0 +1,6 @@
+"#event_simpleName" = NetworkConnectIP4
+| RemoteAddressIP4 = *
+(RemoteIP!=172.16.0.0/12 AND RemoteIP!=192.168.0.0/16 AND RemoteIP!=10.0.0.0/8)
+| ContextBaseFileName = /powershell/
+| groupBy([aid, RemoteIP])
+| count < 250
