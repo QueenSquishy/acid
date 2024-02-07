@@ -1,0 +1,3 @@
+#event_simpleName=RegGenericValueUpdate
+| RegObjectName=~/\\Control Panel\\/
+| (RegValueName=~/ScreenSaveActive/ or RegValueName=~/ScreenSaverIsSecure/ or RegValueName=~/ScreenSaveTimeout/)
