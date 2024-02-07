@@ -1,0 +1,1 @@
+"#event_simpleName" = ProcessRollup2 | CommandLine=/regsvr32.exe/ | CommandLine=/.DLL/ | CommandLine=/SYSVOL/
