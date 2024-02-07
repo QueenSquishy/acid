@@ -1,0 +1,3 @@
+#event_simpleName = NetworkConnectIP4 
+| ContextBaseFileName = *
+| (ContextBaseFileName =/MsoHtmEd.exe/ OR ContextBaseFileName =/Mspub.exe/ OR ContextBaseFileName =/ProtocolHandler.exe/ OR ContextBaseFileName =/ConfigSecurityPolicy.exe/ OR ContextBaseFileName =/Installutil.exe/ OR ContextBaseFileName =/Mshta.exe/ OR ContextBaseFileName =/Presentationhost.exe/) 
